@@ -1,22 +1,24 @@
-# clients/base_client.py
-import requests
+#!/bin/bash
+
+from requests import Response, Session
 
 class BaseClient:
-    def __init__(self, base_url: str, timeout: int = 5):
+    def __init__(self, base_url: str, auth_token: str = None):
         self.base_url = base_url.rstrip("/")
-        self.session = requests.Session()
+        self.auth_token = auth_token
+        self.session = Session()
 
     def _url(self, endpoint: str) -> str:
         return f"{self.base_url}/{endpoint.lstrip('/')}"
 
-    def get(self, endpoint: str, **kwargs):
+    def get(self, endpoint: str, **kwargs) -> Response:
         return self.session.get(self._url(endpoint), **kwargs)
 
-    def post(self, endpoint: str, data=None, json=None, **kwargs):
+    def post(self, endpoint: str, json=None, **kwargs) -> Response:
         return self.session.post(self._url(endpoint), json=json, **kwargs)
 
-    def put(self, endpoint: str, json=None, **kwargs):
+    def put(self, endpoint: str, json=None, **kwargs) -> Response:
         return self.session.put(self._url(endpoint), json=json, **kwargs)
 
-    def delete(self, endpoint: str, **kwargs):
+    def delete(self, endpoint: str, **kwargs) -> Response:
         kwargs.setdefault("timeout")
