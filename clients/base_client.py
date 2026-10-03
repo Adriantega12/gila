@@ -21,4 +21,4 @@ class BaseClient:
         return self.session.put(self._url(endpoint), json=json, **kwargs)
 
     def delete(self, endpoint: str, **kwargs) -> Response:
-        kwargs.setdefault("timeout")
+        return self.session.delete(self._url(endpoint), **kwargs)
