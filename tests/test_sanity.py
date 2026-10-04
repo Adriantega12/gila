@@ -1,6 +1,9 @@
 def test_list_users(api):
     response = api.user_client.list_users()
     assert response.status_code == 200
+    body = response.json()
+    # Depending on whether your API returns a raw list [...] or a paginated dict {"items": [...]}
+    assert isinstance(body, list)
 
 def test_create_user(api, create_user_payload):
     payload = create_user_payload(name="John Tester")
@@ -8,9 +11,13 @@ def test_create_user(api, create_user_payload):
     assert response.status_code == 201
 
     body = response.json()
-    assert body["name"] == payload["name"]
-    assert body["email"] == payload["email"]
-    assert body["age"] == payload["age"]
+    email = body["email"]
+    try:
+        assert email == payload["email"]
+        assert body["name"] == payload["name"]
+        assert body["age"] == payload["age"]
+    finally:
+        api.user_client.delete_user(email)
 
 def test_update_user(api, created_user):
     email = created_user["email"]
@@ -51,4 +58,8 @@ def test_delete_user(api, create_user_payload):
 
     delete_response = api.user_client.delete_user(email)
     assert delete_response.status_code == 204
+
+    # Verify Deletion (Crucial assertion)
+    get_response = api.user_client.get_user(email)
+    assert get_response.status_code == 404
  
