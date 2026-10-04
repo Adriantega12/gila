@@ -1,9 +1,7 @@
-#!/bin/bash
-
 from requests import Response, Session
 
 class BaseClient:
-    def __init__(self, base_url: str, auth_token: str = None):
+    def __init__(self, base_url: str, auth_token: str | None = None):
         self.base_url = base_url.rstrip("/")
         self.auth_token = auth_token
         self.session = Session()
