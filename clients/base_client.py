@@ -6,36 +6,37 @@ from requests import Response, Session
 logger = logging.getLogger("api_client")
 
 class BaseClient:
-    def __init__(self, base_url: str, auth_token: str | None = None):
+    def __init__(self, base_url: str, auth_token: str = "mysecrettoken", prefix: str = "dev"):
         self.base_url = base_url.rstrip("/")
         self.auth_token = auth_token
+        self.prefix = prefix
         self.session = Session()
+        if auth_token:
+            self.session.headers.update({"Authentication": auth_token})
 
     def _url(self, endpoint: str) -> str:
-        return f"{self.base_url}/{endpoint.lstrip('/')}"
+        return f"{self.base_url}/{self.prefix}/{endpoint.lstrip('/')}"
 
     def _log_interaction(self, method: str, url: str, response: Response, **kwargs: Any) -> None:
         log_lines = [
-            f"\n{'='*30} HTTP TRANSACTION {'='*30}",
-            f"REQ: {method.upper()} {url}",
+            f"\n{'='*30} HTTP call {'='*30}",
+            f"Request: {method.upper()} {url}",
+            f"Request headers: {dict(response.request.headers)}"
         ]
-
-        if "headers" in kwargs:
-            log_lines.append(f"REQ HEADERS: {kwargs['headers']}")
         if "params" in kwargs:
-            log_lines.append(f"REQ PARAMS:  {kwargs['params']}")
+            log_lines.append(f"Request params:  {kwargs['params']}")
         if "json" in kwargs and kwargs["json"] is not None:
-            log_lines.append(f"REQ BODY:    {json.dumps(kwargs['json'], indent=2, default=str)}")
-        log_lines.append(f"STATUS:       {response.status_code}")
-        log_lines.append(f"ELAPSED:      {response.elapsed.total_seconds():.3f}s")
+            log_lines.append(f"Request Body: {json.dumps(kwargs['json'], indent=2, default=str)}")
+        log_lines.append(f"Status Code: {response.status_code}")
+        log_lines.append(f"Elapsed: {response.elapsed.total_seconds():.3f}s")
 
         try:
             resp_json = response.json()
             log_lines.append(
-                f"RESP BODY:\n{json.dumps(resp_json, indent=2, default=str)}"
+                f"Response Body:\n{json.dumps(resp_json, indent=2, default=str)}"
             )
         except Exception:
-            log_lines.append(f"RESP BODY (raw):\n{response.text[:1000]}")  # slice to avoid huge binary/HTML dumps
+            log_lines.append(f"Response Body: (raw):\n{response.text[:1000]}")  # slice to avoid huge binary/HTML dumps
 
         log_lines.append(f"{'='*78}\n")
         logger.info("\n".join(log_lines))
