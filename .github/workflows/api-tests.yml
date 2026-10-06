@@ -33,12 +33,12 @@ jobs:
 
             - name: Start API Service via Docker
               run: | 
-                docker pull ghcr.io/danielsilva-loanpro/sdet-interview-challenge
+                docker pull ghcr.io/danielsilva-loanpro/sdet-interview-challenge:latest
                 docker run -d \
                     --name api-service \
                     -p 3000:3000 \
-                    -e PORT=3000 \ 
-                    ghcr.io/danielsilva-loanpro/sdet-interview-challenge
+                    -e PORT=3000 \
+                    ghcr.io/danielsilva-loanpro/sdet-interview-challenge:latest
 
             - name: Wait for API Readiness
               run: |
@@ -53,7 +53,7 @@ jobs:
                   BASE_URL: "http://localhost:3000"
                   ENV_PREFIX: ${{ matrix.env }}
               run: |
-                  pytest --env=${{ matrix.env }} --junitxml=reports/junit-${{ matrix.env }}.xml
+                    pytest --env=${{ matrix.env }} --junitxml=reports/junit-${{ matrix.env }}.xml
 
             - name: Archive Test Logs and Reports
               if: always()
@@ -61,11 +61,11 @@ jobs:
               with:
                   name: test-results-${{ matrix.env }}
                   path: |
-                      logs/
-                      reports/
+                        logs/
+                        reports/
                   retention-days: 7
 
             - name: Dump Docker Logs on Failure
               if: failure()
               run: |
-                  docker compose logs
+                    docker logs api-service
