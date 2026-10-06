@@ -29,18 +29,30 @@ def test_update_user(api, created_user):
 def test_update_non_existent_user(api, create_user_payload):
     email = "idontexist@world.com"
     payload = create_user_payload(email=email)
+
     response = api.user_client.update_user(email, payload)
     assert response.status_code == 404
+
+    body = response.json()
+    assert body["error"] == "User not found"
 
 @pytest.mark.parametrize("missing_field", ["name", "email", "age"])
 def test_update_user_missing_required_fields(api, create_user_payload, missing_field):
     payload = create_user_payload()
     email = payload["email"]
     payload.pop(missing_field)
+
     response = api.user_client.update_user(email, payload)
     assert response.status_code == 400
 
+    body = response.json()
+    assert body["error"] == f"{missing_field} is required"
+
 def test_update_user_type_mismatch_age(api, create_user_payload):
     payload = create_user_payload(age="thisshouldbeanage")
+    
     response = api.user_client.update_user(payload["email"], payload)
     assert response.status_code == 400
+
+    body = response.json()
+    assert body["error"] == "Age must be between 1 and 150"

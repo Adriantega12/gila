@@ -11,3 +11,6 @@ def test_get_user(api, created_user):
 def test_get_non_existent_user(api):
     response = api.user_client.get_user("idontexist@world.com")
     assert response.status_code == 404
+
+    body = response.json()
+    assert body["error"] == "User not found"

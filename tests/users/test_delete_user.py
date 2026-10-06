@@ -16,9 +16,15 @@ def test_delete_user(api, create_user_payload):
     get_response = api.user_client.get_user(email)
     assert get_response.status_code == 404
 
+    body = get_response.json()
+    assert body["error"] == "User not found"
+    
 def test_delete_non_existent_user(api):
-    delete_response = api.user_client.delete_user("idontexist@world.com")
-    assert delete_response.status_code == 404
+    response = api.user_client.delete_user("idontexist@world.com")
+    assert response.status_code == 404
+
+    body = response.json()
+    assert body["error"] == "User not found"
 
 def test_delete_user_twice(api, create_user_payload):
     payload = create_user_payload(name="John Delete")
@@ -41,3 +47,6 @@ def test_delete_user_twice(api, create_user_payload):
     # Attempt delete a second time
     delete_response = api.user_client.delete_user(email)
     assert delete_response.status_code == 404
+
+    body = delete_response.json()
+    assert body["error"] == "User not found"
