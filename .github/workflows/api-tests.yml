@@ -32,7 +32,21 @@ jobs:
                   pip install -r requirements.txt
 
             - name: Start API Service via Docker
-              run: docker run -p 3000:3000 ghcr.io/danielsilva-loanpro/sdet-interview-challenge
+              run: | 
+                docker pull ghcr.io/danielsilva-loanpro/sdet-interview-challenge
+                docker run -d \
+                    --name api-service \
+                    -p 3000:3000 \
+                    -e PORT=3000 \ 
+                    ghcr.io/danielsilva-loanpro/sdet-interview-challenge
+
+            - name: Wait for API Readiness
+              run: |
+                echo "Waiting for API to respond on http://localhost:3000..."
+                timeout 60s bash -c 'until curl -s -o /dev/null http://localhost:3000/dev/users; do sleep 2; done' || {
+                    echo "Docker failed to start"
+                    exit 1
+                }
 
             - name: Run Pytest against ${{ matrix.env }}
               env:
