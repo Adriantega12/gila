@@ -50,3 +50,15 @@ def test_delete_user_twice(api, create_user_payload):
 
     body = delete_response.json()
     assert body["error"] == "User not found"
+
+def test_delete_user_missing_auth_header(api, created_user):
+    email = created_user["email"]
+
+    response = api.user_client.delete_user(email, headers={"Authentication": None})
+    assert response.status_code == 401
+
+    body = response.json()
+    assert body["error"] == "Authentication required"
+
+    get_response = api.user_client.get_user(email)
+    assert get_response.status_code == 200

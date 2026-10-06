@@ -1,9 +1,11 @@
 import os
 import logging
-from datetime import datetime
+from dotenv import load_dotenv
 from pathlib import Path
 from pytest import fixture
 from clients.api_gateway import ApiGateway
+
+load_dotenv()
 
 @fixture(autouse=True)
 def per_test_logger(request):
@@ -43,6 +45,11 @@ def env_prefix(request):
 @fixture(scope="session")
 def api(env_prefix) -> ApiGateway:
     base_url = os.getenv("BASE_URL", "http://localhost:3000")
-    gateway = ApiGateway(base_url=base_url, env_prefix=env_prefix)
+    auth_token = os.getenv("AUTH_TOKEN")
+    gateway = ApiGateway(
+        base_url=base_url,
+        auth_token=auth_token, 
+        env_prefix=env_prefix
+    )
     yield gateway
     gateway.base_client.session.close()

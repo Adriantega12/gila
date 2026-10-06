@@ -51,7 +51,8 @@ jobs:
             - name: Run Pytest against ${{ matrix.env }}
               env:
                 BASE_URL: "http://localhost:3000"
-                ENV_PREFIX: ${{ matrix.env }}
+                ENV: ${{ matrix.env }}
+                AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
               run: |
                 pytest --env=${{ matrix.env }} --junitxml=reports/junit-${{ matrix.env }}.xml
 

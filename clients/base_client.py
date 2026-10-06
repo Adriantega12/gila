@@ -6,7 +6,12 @@ from requests import Response, Session
 logger = logging.getLogger("api_client")
 
 class BaseClient:
-    def __init__(self, base_url: str, auth_token: str = "mysecrettoken", prefix: str = "dev"):
+    def __init__(
+        self, 
+        base_url: str, 
+        auth_token: str | None = None, 
+        prefix: str = "dev"
+    ):
         self.base_url = base_url.rstrip("/")
         self.auth_token = auth_token
         self.prefix = prefix

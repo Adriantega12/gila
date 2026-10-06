@@ -5,7 +5,7 @@ class ApiGateway:
     def __init__(
         self, 
         base_url: str, 
-        auth_token: str = "mysecrettoken",
+        auth_token: str | None = None,
         env_prefix: str = "dev",
     ):
         self.base_client = BaseClient(
