@@ -23,13 +23,13 @@ jobs:
             - name: Set up Python
               uses: actions/setup-python@v5
               with:
-                  python-version: "3.11"
-                  cache: "pip"
+                python-version: "3.11"
+                cache: "pip"
 
             - name: Install dependencies
               run: |
-                  python -m pip install --upgrade pip
-                  pip install -r requirements.txt
+                python -m pip install --upgrade pip
+                pip install -r requirements.txt
 
             - name: Start API Service via Docker
               run: | 
@@ -50,22 +50,30 @@ jobs:
 
             - name: Run Pytest against ${{ matrix.env }}
               env:
-                  BASE_URL: "http://localhost:3000"
-                  ENV_PREFIX: ${{ matrix.env }}
+                BASE_URL: "http://localhost:3000"
+                ENV_PREFIX: ${{ matrix.env }}
               run: |
-                    pytest --env=${{ matrix.env }} --junitxml=reports/junit-${{ matrix.env }}.xml
+                pytest --env=${{ matrix.env }} --junitxml=reports/junit-${{ matrix.env }}.xml
 
             - name: Archive Test Logs and Reports
               if: always()
               uses: actions/upload-artifact@v4
               with:
-                  name: test-results-${{ matrix.env }}
-                  path: |
-                        logs/
-                        reports/
-                  retention-days: 7
+                name: test-results-${{ matrix.env }}
+                path: |
+                    logs/
+                    reports/
+                retention-days: 7
+
+            - name: Publish Test Report to GitHub UI
+              uses: dorny/test-reporter@v1
+              if: always()
+              with:
+                name: Test Report (${{ matrix.env }})
+                path: reports/junit-*.xml
+                reporter: java-junit
 
             - name: Dump Docker Logs on Failure
               if: failure()
               run: |
-                    docker logs api-service
+                docker logs api-service
