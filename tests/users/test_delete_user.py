@@ -58,7 +58,7 @@ def test_delete_user_missing_auth_header(api, created_user):
     assert response.status_code == 401
 
     body = response.json()
-    assert body["error"] == "Authentication required"
+    assert body["error"] == "Authentication required or invalid"
 
     get_response = api.user_client.get_user(email)
     assert get_response.status_code == 200

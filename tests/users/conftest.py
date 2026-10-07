@@ -1,5 +1,8 @@
+import logging
 from pytest import fixture
 from uuid import uuid4
+
+logger = logging.getLogger(__name__)
 
 @fixture
 def create_user_payload():
@@ -16,7 +19,7 @@ def create_user_payload():
 
 @fixture
 def created_user(api, create_user_payload):
-    # Setup
+    logger.info("Fixture :: Starting user creation for test:")
     payload = create_user_payload(name = "John Fixture")
     create_response = api.user_client.create_user(payload)
     assert create_response.status_code == 201, (
@@ -27,7 +30,7 @@ def created_user(api, create_user_payload):
     # Hand control to test
     yield user_data
 
-    # Cleanup
+    logger.info("Fixture :: Starting cleanup for test")
     email = user_data["email"]
     delete_response = api.user_client.delete_user(email) 
     assert delete_response.status_code == 204, (f"Fixture teardown :: failed to delete test user {email}: {delete_response.error}")

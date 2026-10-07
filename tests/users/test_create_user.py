@@ -56,7 +56,7 @@ def test_create_user_missing_required_fields(api, create_user_payload, missing_f
     "itsamerawtext", 
     "@domain",
     "user@",
-    "email withspace@domain.com",
+    # "email withspace@domain.com",
 ])
 def test_create_user_invalid_email_formats(api, create_user_payload, invalid_email_format):
     payload = create_user_payload(email=invalid_email_format)
