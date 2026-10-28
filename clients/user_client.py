@@ -19,3 +19,6 @@ class UserClient:
 
     def delete_user(self, email: str, **kwargs: Any):
         return self.client.delete(f"users/{email}", **kwargs)
+
+    def create_note(self, email: str, json: dict[str, Any], **kwargs: Any):
+        return self.client.post(f"users/{email}/notes", json, **kwargs)

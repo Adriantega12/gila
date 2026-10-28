@@ -23,10 +23,16 @@ class BaseClient:
         return f"{self.base_url}/{self.prefix}/{endpoint.lstrip('/')}"
 
     def _log_interaction(self, method: str, url: str, response: Response, **kwargs: Any) -> None:
+        headers = dict(response.request.headers)
+        sensible_headers = ["Authentication"]
+        for header in sensible_headers:
+            if headers[header]:
+              headers[header] = "******"
+
         log_lines = [
             f"\n{'='*30} HTTP call {'='*30}",
             f"Request: {method.upper()} {url}",
-            f"Request headers: {dict(response.request.headers)}"
+            f"Request headers: {headers}"
         ]
         if "params" in kwargs:
             log_lines.append(f"Request params:  {kwargs['params']}")

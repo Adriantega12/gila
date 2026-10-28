@@ -13,4 +13,10 @@ class ApiGateway:
             auth_token=auth_token, 
             prefix=env_prefix
         )
+        self.base_client_prod = BaseClient(
+            base_url=base_url, 
+            auth_token=auth_token, 
+            prefix="prod",
+        )
         self.user_client = UserClient(self.base_client)
+        self.user_client_prod = UserClient(self.base_client_prod)

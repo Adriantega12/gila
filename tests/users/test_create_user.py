@@ -31,6 +31,19 @@ def test_create_user_with_age_limits(api, create_user_payload, age_limit):
     finally:
         api.user_client.delete_user(email)
 
+def test_create_user_in_dev_shouldnt_exist_prod(api, create_user_payload, created_user):
+    email = created_user["email"] # dev
+    # response = api.user_client_prod.get_user(email)
+    # assert response.status_code == 404
+    # body = response.json()
+    # assert body["error"] == "User not found"
+
+    list_response = api.user_client_prod.list_users()
+    list_body = list_response.json()
+
+    for user in list_body:
+        assert user["email"] != email
+
 def test_create_user_with_duplicate_email(api, create_user_payload, created_user):
     email = created_user["email"]
     payload = create_user_payload(email=email)

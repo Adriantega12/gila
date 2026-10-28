@@ -32,5 +32,9 @@ def created_user(api, create_user_payload):
 
     logger.info("Fixture :: Starting cleanup for test")
     email = user_data["email"]
-    delete_response = api.user_client.delete_user(email) 
-    assert delete_response.status_code == 204, (f"Fixture teardown :: failed to delete test user {email}: {delete_response.error}")
+    delete_response = api.user_client.delete_user(email)
+
+    error = delete_response.text
+    # if "error" in body:
+    assert delete_response.status_code == 204, (f"Fixture teardown :: failed to delete test user {email}: {error}")
+
